@@ -1,0 +1,27 @@
+version: '3.9'
+
+networks:
+  k6-network:
+    driver: bridge
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api
+    networks:
+      - k6-network
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+
+  k6:
+    image: grafana/k6:latest
+    container_name: k6
+    networks:
+      - k6-network
+    volumes:
+      - ./scripts:/scripts
+    entrypoint: ["/bin/sh", "-c", "tail -f /dev/null"]
